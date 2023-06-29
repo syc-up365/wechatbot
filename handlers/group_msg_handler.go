@@ -15,9 +15,9 @@ type GroupMessageHandler struct {
 
 // handle 处理消息
 func (g *GroupMessageHandler) handle(msg *openwechat.Message) error {
-	if msg.IsText() {
-		return g.ReplyText(msg)
-	}
+	//if msg.IsText() {
+	//	return g.ReplyText(msg)
+	//}
 	return nil
 }
 
@@ -39,8 +39,10 @@ func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message) error {
 	}
 
 	// 替换掉@文本，然后向GPT发起请求
-	replaceText := "@" + sender.Self.NickName
+	replaceText := "@" + sender.NickName
 	requestText := strings.TrimSpace(strings.ReplaceAll(msg.Content, replaceText, ""))
+	requestText = strings.TrimSpace(strings.ReplaceAll(requestText, "@NUPOLL", ""))
+	log.Printf("requestText  %v", requestText)
 	reply, err := gtp.Completions(requestText)
 	if err != nil {
 		log.Printf("gtp request error: %v \n", err)
